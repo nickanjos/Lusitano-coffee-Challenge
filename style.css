@@ -1,0 +1,67 @@
+// --- Reset Game Function ---
+function resetGame() {
+  score = 0;
+  gameSpeed = initialGameSpeed;
+  obstacles = [];
+  collectibles = [];
+  clouds = [];
+
+  if (!playerImg) {
+      console.error("Player image not loaded in resetGame!");
+      return;
+  }
+
+  // <<< --- ADD THIS SECTION --- >>>
+  // Resize the loaded image before using its dimensions
+  let desiredPlayerHeight = 60; // <<< SET YOUR DESIRED HEIGHT (pixels)
+  playerImg.resize(0, desiredPlayerHeight); // Resize proportionally based on height (0 means auto-width)
+
+  // --- OR --- (Use only ONE resize line)
+
+  // let desiredPlayerWidth = 45; // <<< SET YOUR DESIRED WIDTH (pixels)
+  // playerImg.resize(desiredPlayerWidth, 0); // Resize proportionally based on width (0 means auto-height)
+
+  // --- OR --- (Use if you need specific non-proportional size - might distort)
+
+  // playerImg.resize(22, 30); // Resize to specific width AND height
+
+  // <<< --- END OF ADDED SECTION --- >>>
+
+
+  // Now get the NEW dimensions AFTER resizing
+  let visualPlayerWidth = playerImg.width;
+  let visualPlayerHeight = playerImg.height;
+
+  player = {
+    x: width / 4,
+    y: groundY - visualPlayerHeight, // Position based on NEW height
+    w: visualPlayerWidth,         // Collision width based on NEW size
+    h: visualPlayerHeight,        // Collision height based on NEW size
+    velocityY: 0,
+    isOnGround: true,
+
+    // ... rest of player jump, update functions ...
+
+    draw: function() {
+      // Draw using the NEW w and h (which come from the resized image)
+      image(playerImg, this.x, this.y, this.w, this.h);
+    },
+
+     // ... rest of player collidesWith function ...
+     collidesWith: function(item) { // Collision check uses new w/h automatically
+            return (
+                this.x < item.x + item.w &&
+                this.x + this.w > item.x &&
+                this.y < item.y + item.h &&
+                this.y + this.h > item.y
+            );
+        }
+  };
+
+  // ... rest of resetGame function (spawning timers, clouds) ...
+    setNextObstacleSpawn();
+    setNextCollectibleSpawn();
+    for (let i=0; i< 5; i++) {
+        spawnCloud(random(width));
+    }
+}
